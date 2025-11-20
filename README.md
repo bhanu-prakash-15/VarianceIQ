@@ -32,9 +32,10 @@ The system consists of:
 
 Multi-Agent Architecture:
 
-Upload CSV Dataset
-Analysis Agent (deterministic) 
-JSON Summary Explanation Agent (Azure GPT-4o-mini) 
-Executive Narrative + Key Drivers 
+Upload CSV Dataset -> 
+Analysis Agent (deterministic) ->
+JSON Summary ->
+Explanation Agent (Azure GPT-4o-mini) ->
+Executive Narrative + Key Drivers ->
 Streamlit Dashboard (UI)
 

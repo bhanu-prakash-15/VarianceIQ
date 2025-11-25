@@ -138,20 +138,6 @@ No user can see another user’s history.
 
 ---
 
-## 📈 **Example Output**
-
-### **Executive Narrative (AI-Generated)**
-
-*“In reviewing the budget versus actual variance analysis, we observe a mixed performance across departments…”*
-
-### **Key Drivers**
-
-* Dept A overspent due to X
-* Dept B underspent due to Y
-* Materiality threshold triggered for Z
-
----
-
 ## 🎯 **Purpose**
 
 This project demonstrates the application of **Generative AI in Financial Analytics**, focusing on:
@@ -163,31 +149,5 @@ This project demonstrates the application of **Generative AI in Financial Analyt
 
 ---
 
-## 📘 **For Academic Submission**
 
-This repository contains:
 
-* Pitch
-* Solution Design Report
-* MVP (Multi-Agent System + Dashboard)
-* Assets (code, diagrams, screenshots)
-
----
-
-## 🧑‍💻 Author
-
-**Bhanu Prakash Mudavath**
-MS in Data Science Candidate
-Florida Atlantic University
-
----
-
-If you'd like, I can **also generate**:
-
-✅ A professional project banner
-✅ Architecture diagram
-✅ Flowchart of the multi-agent system
-✅ GitHub badges
-✅ Demo GIF preview of the dashboard
-
-Just tell me what you want!

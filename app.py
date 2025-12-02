@@ -1,3 +1,4 @@
+# app.py
 import os
 import json
 import hashlib
@@ -10,6 +11,7 @@ import streamlit as st
 
 from analysis_agent import AnalysisAgent, AnalysisConfig
 from explanation_agent import ExplanationAgent, ExplanationConfig
+from forecasting_agent import ForecastingAgent, ForecastingConfig  # ✅ NEW IMPORT
 
 USERS_FILE = "users.csv"
 HISTORY_DIR = "user_history"
@@ -17,83 +19,68 @@ UPLOAD_DIR = "uploaded_files"
 
 
 # ======================================================
-#  GLOBAL STYLE – POWERBI LOOK
+#  GLOBAL STYLE
 # ======================================================
 def inject_css():
     st.markdown(
         """
         <style>
-        /* Light grey page background */
         .stApp {
-            background-color: #e5e7eb;
+            background-color: #0f172a;
         }
-
         .main {
-            background-color: #f3f4f6;
+            background-color: #111827;
         }
-
-        /* Generic dashboard card */
         .dashboard-card {
-            background-color: #ffffff;
+            background-color: #111827;
             padding: 1rem 1.25rem;
             border-radius: 0.9rem;
-            box-shadow: 0 6px 14px rgba(15, 23, 42, 0.08);
-            border: 1px solid #e5e7eb;
+            box-shadow: 0 6px 14px rgba(15, 23, 42, 0.8);
+            border: 1px solid #1f2937;
         }
-
         .card-title {
             font-size: 0.8rem;
             font-weight: 600;
-            color: #6b7280;
+            color: #9ca3af;
             text-transform: uppercase;
             letter-spacing: .06em;
             margin-bottom: 0.25rem;
         }
-
         .card-value {
             font-size: 1.7rem;
             font-weight: 700;
-            color: #111827;
+            color: #f9fafb;
             margin-bottom: 0.25rem;
         }
-
         .card-sub {
             font-size: 0.8rem;
-            color: #9ca3af;
+            color: #6b7280;
         }
-
         .section-title {
             font-size: 1.05rem;
             font-weight: 600;
-            color: #111827;
+            color: #e5e7eb;
             margin: 0.4rem 0 0.5rem 0;
         }
-
         .page-title {
             font-size: 2rem;
             font-weight: 800;
-            color: #111827;
+            color: #f9fafb;
             margin-bottom: 0.25rem;
         }
-
         .page-subtitle {
             font-size: 0.85rem;
-            color: #6b7280;
+            color: #9ca3af;
             margin-bottom: 0.75rem;
         }
-
         .explanation-text {
             font-size: 0.95rem;
             line-height: 1.6;
-            color: #111827;
+            color: #e5e7eb;
         }
-
-        /* Table container slightly card-like */
         .stDataFrame {
             border-radius: 0.9rem;
         }
-
-        /* Make all headings black & bold globally */
         h1, h2, h3, h4, h5, h6,
         .block-container h1,
         .block-container h2,
@@ -101,72 +88,26 @@ def inject_css():
         .block-container h4,
         .block-container h5,
         .block-container h6 {
-            color: #111827 !important;
+            color: #f9fafb !important;
             font-weight: 700 !important;
         }
-
-        /* Control labels darker in Settings etc. */
         .stSlider > label,
         .stSelectbox > label,
         .stNumberInput > label,
         .stCheckbox > label {
-            color: #111827 !important;
+            color: #e5e7eb !important;
             font-weight: 600 !important;
         }
-
-        /* Force ALL text inside expanders to be black */
         [data-testid="stExpander"] * {
-            color: #111827 !important;
+            color: #e5e7eb !important;
         }
-
         [data-testid="stExpander"] h1,
         [data-testid="stExpander"] h2,
         [data-testid="stExpander"] h3,
         [data-testid="stExpander"] h4 {
-            color: #111827 !important;
+            color: #f9fafb !important;
             font-weight: 700 !important;
         }
-
-        /* ================= SIDEBAR STYLING ================= */
-
-        /* Dark slate sidebar background */
-        [data-testid="stSidebar"] {
-            background-color: #111827;
-        }
-
-        /* Make ALL sidebar text bright and readable */
-        [data-testid="stSidebar"] * {
-            color: #f9fafb !important;
-        }
-
-        /* Sidebar title (👤 Bhanu) */
-        [data-testid="stSidebar"] h1,
-        [data-testid="stSidebar"] h2,
-        [data-testid="stSidebar"] h3,
-        [data-testid="stSidebar"] h4,
-        [data-testid="stSidebar"] h5 {
-            color: #ffffff !important;
-            font-weight: 700 !important;
-        }
-
-        /* Navigation radio labels */
-        [data-testid="stSidebar"] label {
-            color: #f9fafb !important;
-            font-size: 1.05rem;
-            font-weight: 500;
-        }
-
-        /* Upload widget text in sidebar */
-        [data-testid="stSidebar"] [data-testid="stFileUploader"] * {
-            color: #f9fafb !important;
-        }
-
-        /* Uploaded file name (e.g., Expense_Budget_DEMO.csv) */
-        [data-testid="stSidebar"] .uploadedFileName {
-            color: #ffffff !important;
-            font-weight: 600 !important;
-        }
-
         </style>
         """,
         unsafe_allow_html=True,
@@ -219,55 +160,45 @@ def save_user_history(email: str, history: List[Dict[str, Any]]) -> None:
 
 
 # ======================================================
-#  LOGIN / SIGNUP PAGE (FULL SCREEN, CENTERED CARD)
+#  LOGIN / SIGNUP PAGE
 # ======================================================
 def show_login_page():
     inject_css()
-
-    # ---- Extra CSS: label color + layout for login card ----
     st.markdown(
         """
         <style>
-        /* Make input labels black in login form */
         .stTextInput label, .stPasswordInput label {
-            color: #111 !important;
+            color: #f9fafb !important;
             font-weight: 600 !important;
         }
-
-        /* Make subheaders (e.g. "Login to your account") black */
         [data-testid="stAppViewContainer"] h3 {
-            color: #111827 !important;
+            color: #f9fafb !important;
             font-weight: 700 !important;
         }
-
-        /* Hide sidebar on login page */
         [data-testid="stSidebar"] {
             display: none;
         }
-
-        /* Turn the main block-container into a centered card */
         [data-testid="stAppViewContainer"] > .main > div {
             max-width: 480px;
             margin: 5rem auto;
             padding: 2.5rem 2.25rem 2rem 2.25rem;
-            background: #ffffff;
+            background: #020617;
             border-radius: 1rem;
-            box-shadow: 0 10px 30px rgba(15,23,42,0.12);
-            border: 1px solid #e5e7eb;
+            box-shadow: 0 10px 30px rgba(15,23,42,0.9);
+            border: 1px solid #1f2937;
         }
         </style>
         """,
         unsafe_allow_html=True,
     )
 
-    # ----- Title + subtitle -----
     st.markdown(
-        "<h1 style='text-align:center; color:black; font-size:1.9rem; "
+        "<h1 style='text-align:center; color:#f9fafb; font-size:1.9rem; "
         "margin-bottom:0.3rem;'>🔐 VarianceIQ Login</h1>",
         unsafe_allow_html=True,
     )
     st.markdown(
-        "<p style='text-align:center; color:#6b7280; margin-bottom:1.5rem;'>"
+        "<p style='text-align:center; color:#9ca3af; margin-bottom:1.5rem;'>"
         "Sign in to access your variance analysis dashboard.</p>",
         unsafe_allow_html=True,
     )
@@ -275,7 +206,6 @@ def show_login_page():
     users_df = load_users()
     tab_login, tab_signup = st.tabs(["Login", "Create Account"])
 
-    # ---------------- LOGIN ----------------
     with tab_login:
         st.subheader("Login to your account")
         with st.form("login_form"):
@@ -296,10 +226,7 @@ def show_login_page():
                     st.session_state.user_name = users_df.loc[
                         users_df["email"] == email, "name"
                     ].iloc[0]
-
-                    # Load this user's history into session
                     st.session_state.history = load_user_history(email)
-
                     st.success("Login successful!")
                     st.rerun()
                 else:
@@ -307,7 +234,6 @@ def show_login_page():
             else:
                 st.error("Account does not exist. Please create one.")
 
-    # ---------------- SIGN UP ----------------
     with tab_signup:
         st.subheader("Create a new account")
         with st.form("signup_form"):
@@ -338,7 +264,7 @@ def show_login_page():
 
 
 # ======================================================
-#  SAMPLE DATA (USED WHEN NO CSV IS UPLOADED)
+#  SAMPLE DATA
 # ======================================================
 def load_sample_data():
     data = {
@@ -349,6 +275,7 @@ def load_sample_data():
     df = pd.DataFrame(data)
     df["Variance"] = df["Budget"] - df["Spent"]
     df["% Used"] = (df["Spent"] / df["Budget"] * 100).round(1)
+
     months = (
         pd.date_range("2025-01-01", periods=5, freq="MS")
         .strftime("%Y-%m")
@@ -365,13 +292,7 @@ def load_sample_data():
 
 
 def build_summary_from_df(df: pd.DataFrame) -> Dict[str, Any]:
-    """Minimal AnalysisSummary-like dict so ExplanationAgent can run on demo data."""
-    meta = {
-        "row_count": int(len(df)),
-        "materiality_abs": 0.0,
-        "materiality_pct": 0.0,
-    }
-
+    meta = {"row_count": int(len(df)), "materiality_abs": 0.0, "materiality_pct": 0.0}
     aggregate = []
     for _, r in df.iterrows():
         aggregate.append(
@@ -385,7 +306,6 @@ def build_summary_from_df(df: pd.DataFrame) -> Dict[str, Any]:
                 ),
             }
         )
-
     line_items = []
     for _, r in df.iterrows():
         line_items.append(
@@ -408,21 +328,18 @@ def build_summary_from_df(df: pd.DataFrame) -> Dict[str, Any]:
                 "drivers": [],
             }
         )
-
     return {"metadata": meta, "aggregate": aggregate, "line_items": line_items}
 
 
 # ======================================================
-#  MAIN DASHBOARD (POWERBI STYLE)
+#  MAIN DASHBOARD
 # ======================================================
 def main_dashboard():
     inject_css()
 
-    # Ensure history list exists in session
     if "history" not in st.session_state:
         st.session_state.history = []
 
-    # ------------ HEADER ------------
     header_left, header_right = st.columns([3, 1])
     with header_left:
         st.markdown(
@@ -430,12 +347,15 @@ def main_dashboard():
             unsafe_allow_html=True,
         )
         st.markdown(
-            '<div class="page-subtitle">VarianceIQ – automated variance analysis for large public-sector budgets.</div>',
+            '<div class="page-subtitle">VarianceIQ – automated variance analysis for FP&A teams.</div>',
             unsafe_allow_html=True,
         )
     with header_right:
-        st.markdown("<div style='text-align:right;'>Period</div>", unsafe_allow_html=True)
-        period = st.radio(
+        st.markdown(
+            "<div style='text-align:right; color:#9ca3af;'>Period</div>",
+            unsafe_allow_html=True,
+        )
+        st.radio(
             "",
             ["Month", "Quarter", "Total"],
             index=2,
@@ -443,32 +363,25 @@ def main_dashboard():
             label_visibility="collapsed",
         )
 
-    # ------------ DATA & ANALYSIS ------------
     st.sidebar.subheader("Upload Budget vs Actual")
-    uploaded_file = st.sidebar.file_uploader(
-        "Upload CSV/XLSX", type=["csv", "xlsx"]
-    )
+    uploaded_file = st.sidebar.file_uploader("Upload CSV/XLSX", type=["csv", "xlsx"])
 
-    summary_dict = None  # for ExplanationAgent
+    summary_dict = None
     file_name = "Sample data (built-in)"
     file_path = None
 
     if uploaded_file:
-        # Save uploaded file to disk so we can reference it later in history
         os.makedirs(UPLOAD_DIR, exist_ok=True)
         file_name = uploaded_file.name
         file_path = os.path.join(UPLOAD_DIR, file_name)
-
         with open(file_path, "wb") as f:
             f.write(uploaded_file.getbuffer())
 
-        # Read from the saved file
         if uploaded_file.name.endswith(".csv"):
             df_raw = pd.read_csv(file_path)
         else:
             df_raw = pd.read_excel(file_path)
 
-        # Materiality in millions from Settings
         var_abs_millions = float(st.session_state.get("variance_threshold", 10))
         var_abs = var_abs_millions * 1_000_000.0
         var_pct = 0.05
@@ -481,7 +394,6 @@ def main_dashboard():
             materiality_threshold_abs=var_abs,
             materiality_threshold_pct=var_pct,
         )
-
         analysis_agent = AnalysisAgent(config=analysis_cfg)
         summary = analysis_agent.run(df_raw)
         summary_dict = summary.to_dict()
@@ -498,23 +410,18 @@ def main_dashboard():
         )
         df["Variance"] = df["Budget"] - df["Spent"]
         df["% Used"] = (df["Spent"] / df["Budget"] * 100)
-
     else:
-        # Built-in sample data
         df, _ = load_sample_data()
         summary_dict = build_summary_from_df(df)
 
-    # ------------ KPI DATA (used in dashboard + history) ------------
     total_budget = df["Budget"].sum()
     total_spent = df["Spent"].sum()
     difference = total_budget - total_spent
     pct_used = (total_spent / total_budget * 100)
 
-    # --------------- TOP KPI ROW ---------------
     st.write("")
-    kpi1, kpi2, kpi3, kpi4 = st.columns(4)
-
-    with kpi1:
+    k1, k2, k3, k4 = st.columns(4)
+    with k1:
         st.markdown(
             f"""
             <div class="dashboard-card">
@@ -525,7 +432,7 @@ def main_dashboard():
             """,
             unsafe_allow_html=True,
         )
-    with kpi2:
+    with k2:
         st.markdown(
             f"""
             <div class="dashboard-card">
@@ -536,7 +443,7 @@ def main_dashboard():
             """,
             unsafe_allow_html=True,
         )
-    with kpi3:
+    with k3:
         sign = "favourable" if difference > 0 else "unfavourable"
         st.markdown(
             f"""
@@ -548,7 +455,7 @@ def main_dashboard():
             """,
             unsafe_allow_html=True,
         )
-    with kpi4:
+    with k4:
         st.markdown(
             f"""
             <div class="dashboard-card">
@@ -560,20 +467,13 @@ def main_dashboard():
             unsafe_allow_html=True,
         )
 
-    # sort once for visuals
     df_sorted = df.sort_values("Spent", ascending=False)
 
     st.write("")
-    # *** renamed heading to just "Overview" ***
-    st.markdown(
-        '<div class="section-title">Overview</div>',
-        unsafe_allow_html=True,
-    )
+    st.markdown('<div class="section-title">Overview</div>', unsafe_allow_html=True)
 
-    # ========= MIDDLE ROW: BAR + PIE =========
-    row1_col1, row1_col2 = st.columns([1.2, 1])
-
-    with row1_col1:
+    c1, c2 = st.columns([1.2, 1])
+    with c1:
         top15 = df_sorted.head(15)
         fig_bar = px.bar(
             top15.sort_values("Spent"),
@@ -586,10 +486,13 @@ def main_dashboard():
             height=430,
             xaxis_tickformat=",.0f",
             margin=dict(l=10, r=10, t=40, b=10),
+            plot_bgcolor="#020617",
+            paper_bgcolor="#020617",
+            font_color="#e5e7eb",
         )
         st.plotly_chart(fig_bar, use_container_width=True)
 
-    with row1_col2:
+    with c2:
         top10 = df_sorted.head(10)
         other_spent = df_sorted["Spent"].iloc[10:].sum()
         pie_df = top10.copy()
@@ -600,21 +503,20 @@ def main_dashboard():
             "Variance": 0.0,
             "% Used": 0.0,
         }
-        fig_pie = px.pie(
-            pie_df,
-            names="Category",
-            values="Spent",
-            hole=0.45,
-        )
+        fig_pie = px.pie(pie_df, names="Category", values="Spent", hole=0.45)
         fig_pie.update_traces(textposition="inside", textinfo="percent+label")
-        fig_pie.update_layout(height=430, margin=dict(l=10, r=10, t=40, b=10))
+        fig_pie.update_layout(
+            height=430,
+            margin=dict(l=10, r=10, t=40, b=10),
+            plot_bgcolor="#020617",
+            paper_bgcolor="#020617",
+            font_color="#e5e7eb",
+        )
         st.plotly_chart(fig_pie, use_container_width=True)
 
-    # ========= SECOND ROW: GLOBAL BAR + TABLE =========
     st.write("")
-    row2_col1, row2_col2 = st.columns([1, 1.2])
-
-    with row2_col1:
+    c3, c4 = st.columns([1, 1.2])
+    with c3:
         st.markdown(
             '<div class="section-title">Global Budget vs Expenses</div>',
             unsafe_allow_html=True,
@@ -623,21 +525,20 @@ def main_dashboard():
             {"Metric": ["Budget", "Expenses"], "Value": [total_budget, total_spent]}
         )
         fig_global = px.bar(
-            global_df,
-            x="Metric",
-            y="Value",
-            text="Value",
-            labels={"Value": "Amount (€)"},
+            global_df, x="Metric", y="Value", text="Value", labels={"Value": "Amount (€)"}
         )
         fig_global.update_traces(texttemplate="%{text:,.0f}", textposition="outside")
         fig_global.update_layout(
             yaxis_tickformat=",.0f",
             height=400,
             margin=dict(l=10, r=10, t=40, b=10),
+            plot_bgcolor="#020617",
+            paper_bgcolor="#020617",
+            font_color="#e5e7eb",
         )
         st.plotly_chart(fig_global, use_container_width=True)
 
-    with row2_col2:
+    with c4:
         st.markdown(
             '<div class="section-title">Top 25 Agencies by Spending</div>',
             unsafe_allow_html=True,
@@ -649,9 +550,7 @@ def main_dashboard():
         table_df["% Used"] = table_df["% Used"].map(lambda x: f"{x:.1f}%")
         st.dataframe(table_df.head(25), use_container_width=True, height=360)
 
-    # ==================================================
-    #  EXPLANATION SECTION – ExplanationAgent
-    # ==================================================
+    # ================== EXPLANATION SECTION ==================
     st.write("")
     st.markdown(
         '<div class="section-title">🧠 Variance Explanations</div>',
@@ -671,16 +570,13 @@ def main_dashboard():
             with st.spinner("Running ExplanationAgent..."):
                 result = expl_agent.run(summary_dict)
 
-            # Store in session for main dashboard display
             st.session_state["last_explanations"] = {
                 "narrative": result.narrative,
                 "bullets": result.bullet_points,
                 "mode": result.mode,
             }
 
-            # ---- Create a history entry for THIS user ----
             history = st.session_state.get("history", [])
-
             if history:
                 next_run_id = max(int(h.get("run_id", 0)) for h in history) + 1
             else:
@@ -695,9 +591,7 @@ def main_dashboard():
                 "file_name": file_name,
                 "file_path": file_path,
                 "explanation": {
-                    "generated_at": pd.Timestamp.now().strftime(
-                        "%Y-%m-%d %H:%M:%S"
-                    ),
+                    "generated_at": pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S"),
                     "mode": result.mode,
                     "narrative": result.narrative,
                     "bullets": result.bullet_points,
@@ -708,22 +602,17 @@ def main_dashboard():
             st.session_state.history = history
             save_user_history(current_user, history)
 
-    # ---- render explanations on main dashboard ----
     if "last_explanations" in st.session_state:
         ex = st.session_state["last_explanations"]
-
         st.markdown(
-            f"<p style='color:#111827; font-weight:600; margin-bottom:0.4rem;'>"
+            f"<p style='color:#e5e7eb; font-weight:600; margin-bottom:0.4rem;'>"
             f"Explanation mode: <code>{ex['mode']}</code>"
             f"</p>",
             unsafe_allow_html=True,
         )
-
         st.markdown("#### Executive Narrative")
         clean_narrative = (
-            ex["narrative"]
-            .replace("*", r"\*")
-            .replace("_", r"\_")
+            ex["narrative"].replace("*", r"\*").replace("_", r"\_")
         )
         st.markdown(
             f"<div class='dashboard-card explanation-text'>{clean_narrative}</div>",
@@ -741,24 +630,67 @@ def main_dashboard():
                 unsafe_allow_html=True,
             )
 
+    # ================== FORECAST SECTION ==================
+    st.write("")
+    st.markdown(
+        '<div class="section-title">🔮 Forecast Insights (beta)</div>',
+        unsafe_allow_html=True,
+    )
+
+    if st.button("Generate Forecast Suggestions"):
+        if summary_dict is None:
+            st.warning("No summary available to forecast.")
+        else:
+            # ✅ Force LLM mode for forecasting
+            forecast_cfg = ForecastingConfig(use_llm=True)
+            forecast_agent = ForecastingAgent(config=forecast_cfg)
+
+            with st.spinner("Running ForecastingAgent..."):
+                forecast_result = forecast_agent.run(summary_dict)
+
+            st.session_state["last_forecast"] = forecast_result.to_dict()
+
+    if "last_forecast" in st.session_state:
+        fr = st.session_state["last_forecast"]
+
+        st.markdown(
+            f"<p style='color:#e5e7eb; font-weight:600; margin-bottom:0.4rem;'>"
+            f"Forecast mode: <code>{fr.get('mode','?')}</code>"
+            f"</p>",
+            unsafe_allow_html=True,
+        )
+
+        st.markdown("#### Forward-looking Narrative")
+        st.markdown(
+            f"<div class='dashboard-card explanation-text'>{fr.get('narrative','')}</div>",
+            unsafe_allow_html=True,
+        )
+
+        focus = fr.get("focus_areas") or []
+        if focus:
+            st.markdown("#### Suggested Focus Areas")
+            bullet_html = "".join(f"<li>{item}</li>" for item in focus)
+            st.markdown(
+                f"<ul class='explanation-text'>{bullet_html}</ul>",
+                unsafe_allow_html=True,
+            )
+
 
 # ======================================================
-#  HISTORY PAGE (PER-USER)
+#  HISTORY PAGE
 # ======================================================
 def history_page():
     inject_css()
     st.markdown(
-        "<h1 style='color:black; font-weight:700;'>📜 Run History</h1>",
+        "<h1 style='color:#f9fafb; font-weight:700;'>📜 Run History</h1>",
         unsafe_allow_html=True,
     )
 
     history_list = st.session_state.get("history", [])
-
     if not history_list:
         st.info("No history available.")
         return
 
-    # Show newest first
     for entry in reversed(history_list):
         run_id = entry.get("run_id", "?")
         ts = entry.get("timestamp", "")
@@ -766,24 +698,20 @@ def history_page():
         total_spent = float(entry.get("total_spent", 0))
         diff = float(entry.get("difference", 0))
 
-        # simple text label (no html tags) so color is handled by CSS
-        exp_label = (
+        label = (
             f"Run {run_id} | Budget € {total_budget:,.0f} | "
-            f"Spent € {total_spent:,.0f} | "
-            f"Δ € {diff:,.0f} ({ts})"
+            f"Spent € {total_spent:,.0f} | Δ € {diff:,.0f} ({ts})"
         )
 
-        with st.expander(exp_label, expanded=False):
+        with st.expander(label, expanded=False):
             st.markdown(
-                "<h4 style='color:black;'>Run Details</h4>",
+                "<h4 style='color:#f9fafb;'>Run Details</h4>",
                 unsafe_allow_html=True,
             )
-
             st.write(f"**Timestamp:** {ts}")
             st.write(f"**Run ID:** {run_id}")
             st.write(f"**Total Budget:** € {total_budget:,.0f}")
             st.write(f"**Total Spent:** € {total_spent:,.0f}")
-
             if diff > 0:
                 st.write(f"**Difference:** :green[€ {diff:,.0f}]")
             elif diff < 0:
@@ -791,21 +719,18 @@ def history_page():
             else:
                 st.write(f"**Difference:** € {diff:,.0f}")
 
-            # -------- FILE INFO --------
             file_name = entry.get("file_name")
             file_path = entry.get("file_path")
-
             st.write("### Uploaded File")
             if file_path:
                 st.write(f"[📄 {file_name}]({file_path})")
             else:
                 st.write("Sample data (built-in)")
 
-            # -------- EXPLANATION --------
             explanation = entry.get("explanation")
             if explanation:
                 st.markdown(
-                    "<h4 style='color:black;'>Executive Narrative</h4>",
+                    "<h4 style='color:#f9fafb;'>Executive Narrative</h4>",
                     unsafe_allow_html=True,
                 )
                 st.markdown(explanation["narrative"])
@@ -813,7 +738,7 @@ def history_page():
                 bullets = explanation.get("bullets") or []
                 if bullets:
                     st.markdown(
-                        "<h4 style='color:black;'>Key Points</h4>",
+                        "<h4 style='color:#f9fafb;'>Key Points</h4>",
                         unsafe_allow_html=True,
                     )
                     for b in bullets:
@@ -854,7 +779,7 @@ def settings_page():
     )
 
     st.session_state.use_llm = st.checkbox(
-        "Use Azure GPT-4o-mini (LLM mode)",
+        "Use Azure GPT-4o-mini for variance explanations",
         value=bool(st.session_state.get("use_llm", True)),
         help="If unchecked, ExplanationAgent will use its rule-based fallback.",
     )
@@ -871,24 +796,20 @@ def main():
     if "authenticated" not in st.session_state:
         st.session_state.authenticated = False
 
-    # If not logged in, show only login page (no sidebar)
     if not st.session_state.authenticated:
-        # Clear any previous user's history from memory (safety)
         st.session_state.history = []
         show_login_page()
         return
 
-    # Logged-in view: show sidebar + dashboard pages
     inject_css()
 
     st.sidebar.title(f"👤 {st.session_state.get('user_name', '')}")
     if st.sidebar.button("Logout"):
-        # Persist current user's history before logout
         email = st.session_state.get("user_email", "")
         save_user_history(email, st.session_state.get("history", []))
         st.session_state.authenticated = False
-        # Optional: clear explanations on logout
         st.session_state.pop("last_explanations", None)
+        st.session_state.pop("last_forecast", None)
         st.rerun()
 
     st.sidebar.markdown("---")

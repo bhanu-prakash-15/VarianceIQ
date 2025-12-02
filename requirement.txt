@@ -3,5 +3,7 @@ numpy
 openai
 python-dotenv
 streamlit
-matplotlib
 plotly
+tenacity
+requests
+tiktoken

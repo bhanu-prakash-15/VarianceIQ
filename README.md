@@ -1,4 +1,11 @@
 
+---
+
+# ✅ **Updated README With Dataset Section Added**
+
+Copy–paste this into your README **as-is**:
+
+---
 
 # **VarianceIQ – FP&A Variance Intelligence System**
 
@@ -123,14 +130,7 @@ Once a user uploads a dataset:
             │ Dashboard + Chat   │
             └────────────────────┘
 ```
----
-Assets (Datasets)
 
-Demo Budget Dataset (CSV, ~45MB)
-https://drive.google.com/file/d/1SPwln0DuizH-Mw3JbA-_mId6gBwirDUP/view?usp=drive_link
-
-NYC Expense Budget Full Dataset (CSV, ~270MB)
-https://drive.google.com/file/d/1TSPdi6rTLS-29iUDC-ZCFdQAWUT7YXoJ/view?usp=drive_link
 ---
 
 # 🛠 **Technology Stack**
@@ -201,7 +201,24 @@ http://localhost:8501
   * Executive narrative
   * Key points
   * Forecasting suggestions
-  * Chat queries (optional extension)
+  * Chat queries (optional)
+
+---
+
+# 📂 **Dataset Assets**
+
+VarianceIQ relies on real-world public-sector financial data.
+For demonstration and evaluation, the following datasets are provided:
+
+### **✔ Demo Budget Dataset (CSV, ~45MB)**
+
+A structured subset used during testing and interface demonstration.
+🔗 [https://drive.google.com/file/d/1SPwln0DuizH-Mw3JbA-_mId6gBwirDUP/view?usp=drive_link](https://drive.google.com/file/d/1SPwln0DuizH-Mw3JbA-_mId6gBwirDUP/view?usp=drive_link)
+
+### **✔ NYC Expense Budget — Full Dataset (CSV, ~270MB)**
+
+Official dataset used for full-scale budget variance analysis.
+🔗 [https://drive.google.com/file/d/1TSPdi6rTLS-29iUDC-ZCFdQAWUT7YXoJ/view?usp=drive_link](https://drive.google.com/file/d/1TSPdi6rTLS-29iUDC-ZCFdQAWUT7YXoJ/view?usp=drive_link)
 
 ---
 
@@ -209,24 +226,26 @@ http://localhost:8501
 
 VarianceIQ demonstrates:
 
-###  Real-world application of Generative AI
+### **Real-world application of Generative AI**
 
 Transforming raw numerical data into narratives and forecast guidance.
 
-###  Multi-agent workflow design
+### **Multi-agent workflow design**
 
 Each agent handles a different cognitive task, like a digital FP&A team.
 
-###  Human-in-the-loop FP&A augmentation
+### **Human-in-the-loop FP&A augmentation**
 
 Analyst reviews and refines final explanations.
 
-###  Automation of repetitive financial tasks
+### **Automation of repetitive financial tasks**
 
 Reduces variance explanation time by up to **80%**.
 
-###  Business value + technical depth
+### **Business value + technical depth**
 
 Fits both academic and real-world FP&A use cases.
+
+---
 
 

@@ -1,10 +1,3 @@
-
----
-
-# ✅ **Updated README With Dataset Section Added**
-
-Copy–paste this into your README **as-is**:
-
 ---
 
 # **VarianceIQ – FP&A Variance Intelligence System**

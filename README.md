@@ -123,7 +123,14 @@ Once a user uploads a dataset:
             │ Dashboard + Chat   │
             └────────────────────┘
 ```
+---
+Assets (Datasets)
 
+Demo Budget Dataset (CSV, ~45MB)
+https://drive.google.com/file/d/1SPwln0DuizH-Mw3JbA-_mId6gBwirDUP/view?usp=drive_link
+
+NYC Expense Budget Full Dataset (CSV, ~270MB)
+https://drive.google.com/file/d/1TSPdi6rTLS-29iUDC-ZCFdQAWUT7YXoJ/view?usp=drive_link
 ---
 
 # 🛠 **Technology Stack**

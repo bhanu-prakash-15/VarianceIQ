@@ -202,57 +202,24 @@ http://localhost:8501
 
 VarianceIQ demonstrates:
 
-### ✔ Real-world application of Generative AI
+###  Real-world application of Generative AI
 
 Transforming raw numerical data into narratives and forecast guidance.
 
-### ✔ Multi-agent workflow design
+###  Multi-agent workflow design
 
 Each agent handles a different cognitive task, like a digital FP&A team.
 
-### ✔ Human-in-the-loop FP&A augmentation
+###  Human-in-the-loop FP&A augmentation
 
 Analyst reviews and refines final explanations.
 
-### ✔ Automation of repetitive financial tasks
+###  Automation of repetitive financial tasks
 
 Reduces variance explanation time by up to **80%**.
 
-### ✔ Business value + technical depth
+###  Business value + technical depth
 
 Fits both academic and real-world FP&A use cases.
 
----
-
-# 📎 **Assets Included**
-
-* **GitHub Source Code (MVP)**
-* **Architecture Diagram (PNG)**
-* **Demo Screenshots**
-* **User Interface Mockups**
-* **Sample Input/Output**
-* **Optional Demo Video (if uploaded)**
-
----
-
-# 🏁 **Final Notes**
-
-VarianceIQ blends **structured analytics** with **Generative AI reasoning**, creating a powerful intelligent FP&A assistant that:
-
-* Explains
-* Forecasts
-* Advises
-* Interacts conversationally
-
-All while remaining grounded in financial data uploaded by the user.
-
----
-
-If you want, I can also generate:
-
-✔ A polished **GitHub description**
-✔ A shorter **README version**
-✔ A **final project PDF**
-✔ A **project website landing page**
-
-Just tell me!
+-
